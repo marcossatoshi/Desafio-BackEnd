@@ -6,7 +6,7 @@ public record CourierCreateRequest(
     [property: JsonPropertyName("identifier")] string Identifier,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("cnpj")] string Cnpj,
-    [property: JsonPropertyName("birthDate")] DateOnly BirthDate,
+    [property: JsonPropertyName("birthDate")] DateTime BirthDate,
     [property: JsonPropertyName("cnhNumber")] string CnhNumber,
     [property: JsonPropertyName("cnhType")] string CnhType
 );

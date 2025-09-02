@@ -38,7 +38,7 @@ public class CourierService : ICourierService
             Identifier = request.Identifier ?? string.Empty,
             Name = request.Name,
             Cnpj = request.Cnpj,
-            BirthDate = request.BirthDate.ToDateTime(TimeOnly.MinValue),
+            BirthDate = request.BirthDate,
             CnhNumber = request.CnhNumber,
             CnhType = cnhType,
             CreatedAtUtc = DateTime.UtcNow
