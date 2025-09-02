@@ -94,16 +94,19 @@ jobs:
 
       - name: Apply EF migrations
         env:
-          MOTTU_POSTGRES_CONNECTION: Host=localhost;Port=5432;Database=mottu_rentals;Username=postgres;Password=postgres
+          MOTTU_POSTGRES_CONNECTION: Host=127.0.0.1;Port=5432;Database=mottu_rentals;Username=postgres;Password=postgres
         run: |
+          # Wait for Postgres & RabbitMQ to be reachable from host
+          for i in {1..120}; do (echo > /dev/tcp/127.0.0.1/5432) >/dev/null 2>&1 && break || sleep 1; done
+          for i in {1..120}; do (echo > /dev/tcp/127.0.0.1/5672) >/dev/null 2>&1 && break || sleep 1; done
           dotnet tool run dotnet-ef database update -p src/Mottu.Rentals.Infrastructure/Mottu.Rentals.Infrastructure.csproj -s src/Mottu.Rentals.Api/Mottu.Rentals.Api.csproj
 
       - name: Run API (background)
         env:
           ASPNETCORE_URLS: http://localhost:5000
           ASPNETCORE_ENVIRONMENT: Development
-          MOTTU_POSTGRES_CONNECTION: Host=localhost;Port=5432;Database=mottu_rentals;Username=postgres;Password=postgres
-          RabbitMq__HostName: localhost
+          MOTTU_POSTGRES_CONNECTION: Host=127.0.0.1;Port=5432;Database=mottu_rentals;Username=postgres;Password=postgres
+          RabbitMq__HostName: 127.0.0.1
           RabbitMq__Port: '5672'
           RabbitMq__UserName: guest
           RabbitMq__Password: guest
