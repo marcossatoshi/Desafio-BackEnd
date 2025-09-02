@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Build and Test (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Test (includes Integration with Testcontainers)
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+        run: dotnet test -c Release --no-build -l "console;verbosity=minimal"
+
+  smoke-run:
+    name: Smoke Run API with Docker services
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mottu_rentals
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d mottu_rentals"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Apply EF migrations
+        env:
+          MOTTU_POSTGRES_CONNECTION: Host=localhost;Port=5432;Database=mottu_rentals;Username=postgres;Password=postgres
+        run: |
+          dotnet tool run dotnet-ef database update -p src/Mottu.Rentals.Infrastructure/Mottu.Rentals.Infrastructure.csproj -s src/Mottu.Rentals.Api/Mottu.Rentals.Api.csproj
+
+      - name: Run API (background)
+        env:
+          ASPNETCORE_URLS: http://localhost:5000
+          ASPNETCORE_ENVIRONMENT: Development
+          MOTTU_POSTGRES_CONNECTION: Host=localhost;Port=5432;Database=mottu_rentals;Username=postgres;Password=postgres
+          RabbitMq__HostName: localhost
+          RabbitMq__Port: '5672'
+          RabbitMq__UserName: guest
+          RabbitMq__Password: guest
+        run: |
+          nohup dotnet run --project src/Mottu.Rentals.Api > api.log 2>&1 &
+          echo $! > api.pid
+          sleep 8
+
+      - name: Smoke check
+        run: |
+          curl -sSf http://localhost:5000/swagger/v1/swagger.json | jq '.info.title'
+
+      - name: Stop API and upload logs
+        if: always()
+        run: |
+          if [ -f api.pid ]; then kill $(cat api.pid) || true; fi
+          echo '--- API LOG (tail) ---'
+          tail -n 200 api.log || true
+
+
