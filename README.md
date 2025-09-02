@@ -86,11 +86,6 @@ ou dotnet test -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencove
 - Utilizado por: `RentalService`
 Motivação: isolar regras de preço (valor diário por plano e cálculo do total na devolução — normal/antecipada/tardia) para facilitar mudanças e variações sem alterar a orquestração do serviço.
 
-### Candidatos (Futuro)
-- **Decorator**: logging, cache ou métricas transversais aos serviços.
-- **Specification**: regras de consulta complexas encapsuladas e combináveis em repositórios.
-- **Factory**: construção de agregados/entidades com invariantes não triviais.
-
 ## Tratamento de Erros & Status Codes
 - Placa duplicada retorna `409 Conflict` ao criar/atualizar.
 
