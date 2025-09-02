@@ -93,7 +93,7 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 - Arquivo bloqueado no build: pare a API antes de aplicar migrações.
 - Ainda em memória: abra um novo shell; os scripts limpam `UseInMemoryEF` e `UseMassTransitInMemory` em modo Docker.
 
-## Possíveis features (mas que aumentariam bastante o tempo gasto):
+## Possíveis features:
 
 #Mensageria
 - Observabilidade
