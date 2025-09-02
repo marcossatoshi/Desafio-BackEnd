@@ -38,6 +38,8 @@ public sealed class ContainersFixture : IAsyncLifetime
         await _rabbitMq.StartAsync();
 
         var cs = _postgres.GetConnectionString();
+        // Normalize Host to 127.0.0.1 to avoid IPv6 issues on CI runners
+        cs = cs.Replace("Host=localhost", "Host=127.0.0.1");
         var rmqHost = _rabbitMq.Hostname;
         var rmqPort = _rabbitMq.GetMappedPublicPort(5672);
 
