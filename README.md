@@ -108,7 +108,7 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 
 #Geral
 - Melhor observabilidade: metrics, logs mais estruturados e health checks
-- Estruturar melhor as pastas
+- ~Estruturar melhor as pastas~
 - Criptografar dados sensíveis de acesso
 - ~CI~
 
