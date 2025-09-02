@@ -1,5 +1,7 @@
 ## Desafio Backend – Visão Técnica (Edição Satoshi)
 
+Versão online em https://desafio-backend-app-4f5c452ef09b.herokuapp.com/swagger/index.html
+
 Este documento apresenta a arquitetura e como executar localmente (Windows/Linux), como os testes estão organizados e quais padrões de projeto foram aplicados.
 
 ### Stack
