@@ -79,18 +79,34 @@ Pré-requisitos:
 - .NET SDK 9.0+
 - Docker Desktop (para Postgres e RabbitMQ)
 
-Passos:
-1. Suba os serviços (Postgres e RabbitMQ):
-   - `docker compose up -d`
-2. Configure a connection string (opcional):
-   - variável `MOTTU_POSTGRES_CONNECTION` ou `ConnectionStrings:Postgres` no `appsettings.json` da API
-3. Criar/aplicar migrações (primeira execução):
-   - `dotnet tool restore`
-   - `dotnet tool run dotnet-ef database update -p src/Mottu.Rentals.Infrastructure/Mottu.Rentals.Infrastructure.csproj -s src/Mottu.Rentals.Api/Mottu.Rentals.Api.csproj`
-4. Rodar a API:
-   - `dotnet run --project src/Mottu.Rentals.Api`
-5. Documentação OpenAPI:
-   - Em desenvolvimento: GET `/openapi/v1.json` e UI via Scalar se configurado
+## Execução Local
+
+### Windows (PowerShell)
+Use `run.ps1`. Ele sobe Docker (Postgres + RabbitMQ), aplica migrações e inicia a API.
+
+```powershell
+cd D:\Projetos\Desafio-BackEnd
+./run.ps1
+```
+
+Forçar modo em memória (sem Docker):
+```powershell
+./run.ps1 -InMemory
+```
+
+### Linux/macOS (Bash)
+Use `run.sh` com comportamento equivalente ao script PowerShell.
+
+```bash
+cd /path/to/Desafio-BackEnd
+chmod +x ./run.sh
+./run.sh
+```
+
+Forçar modo em memória:
+```bash
+./run.sh --in-memory
+```
 
 ## Testes
 - Executar todos os testes:
