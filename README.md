@@ -114,3 +114,4 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 
 #Produto
 - Evitar remoção da moto/entregador se tiver alugada
+- ~Validador de CNPJ~
