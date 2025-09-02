@@ -113,4 +113,4 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 - ~CI~
 
 #Produto
-- Evitar remoção da moto/entregador se tiver alugada
+- ~Evitar remoção da moto/entregador se tiver alugada~
