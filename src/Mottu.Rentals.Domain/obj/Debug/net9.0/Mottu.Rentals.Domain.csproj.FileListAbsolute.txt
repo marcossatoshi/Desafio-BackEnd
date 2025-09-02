@@ -1,0 +1,12 @@
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\bin\Debug\net9.0\Mottu.Rentals.Domain.deps.json
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\bin\Debug\net9.0\Mottu.Rentals.Domain.dll
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\bin\Debug\net9.0\Mottu.Rentals.Domain.pdb
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.AssemblyInfoInputs.cache
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.AssemblyInfo.cs
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.csproj.CoreCompileInputs.cache
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.sourcelink.json
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.dll
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\refint\Mottu.Rentals.Domain.dll
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\Mottu.Rentals.Domain.pdb
+D:\Projetos\Desafio-BackEnd\src\Mottu.Rentals.Domain\obj\Debug\net9.0\ref\Mottu.Rentals.Domain.dll

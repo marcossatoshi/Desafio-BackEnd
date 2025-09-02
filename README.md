@@ -72,5 +72,30 @@ https://app.swaggerhub.com/apis-docs/Mottu/mottu_desafio_backend/1.0.0
 - Código limpo e organizado
 - Logs bem estruturados
 - Seguir convenções utilizadas pela comunidade
+
+## Como executar
+
+Pré-requisitos:
+- .NET SDK 9.0+
+- Docker Desktop (para Postgres e RabbitMQ)
+
+Passos:
+1. Suba os serviços (Postgres e RabbitMQ):
+   - `docker compose up -d`
+2. Configure a connection string (opcional):
+   - variável `MOTTU_POSTGRES_CONNECTION` ou `ConnectionStrings:Postgres` no `appsettings.json` da API
+3. Criar/aplicar migrações (primeira execução):
+   - `dotnet tool restore`
+   - `dotnet tool run dotnet-ef database update -p src/Mottu.Rentals.Infrastructure/Mottu.Rentals.Infrastructure.csproj -s src/Mottu.Rentals.Api/Mottu.Rentals.Api.csproj`
+4. Rodar a API:
+   - `dotnet run --project src/Mottu.Rentals.Api`
+5. Documentação OpenAPI:
+   - Em desenvolvimento: GET `/openapi/v1.json` e UI via Scalar se configurado
+
+## Testes
+- Executar todos os testes:
+  - `dotnet test -c Debug`
+- Com cobertura (opcional):
+  - `dotnet test -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencover`
   
 
