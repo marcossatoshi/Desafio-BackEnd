@@ -113,6 +113,7 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 - Melhor observabilidade: metrics, logs mais estruturados e health checks
 - Estruturar melhor as pastas
 - Criptografar dados sensíveis de acesso
+- ~CI~
 
 #Produto
 - Evitar remoção da moto/entregador se tiver alugada
