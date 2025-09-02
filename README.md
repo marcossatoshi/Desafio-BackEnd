@@ -12,7 +12,6 @@ Este documento apresenta a arquitetura e como executar localmente (Windows/Linux
 - **Testes**: xUnit, FluentAssertions, NSubstitute, Testcontainers (integração)
 
 ## Upload de CNH
-- Endpoint: `POST /couriers/{identifier}/cnh`, recebe multipart form `file`.
 - Antiforgery desabilitado neste endpoint para evitar erro em uploads multipart.
 
 ## Configuração
@@ -97,7 +96,7 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 - Arquivo bloqueado no build: pare a API antes de aplicar migrações.
 - Ainda em memória: abra um novo shell; os scripts limpam `UseInMemoryEF` e `UseMassTransitInMemory` em modo Docker.
 
-Possíveis features (mas que aumentariam bastante o tempo gasto):
+##Possíveis features (mas que aumentariam bastante o tempo gasto):
 
 #Mensageria
 - Observabilidade
