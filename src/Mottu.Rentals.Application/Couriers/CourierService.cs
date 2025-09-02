@@ -2,6 +2,7 @@ using Mottu.Rentals.Application.Abstractions;
 using Mottu.Rentals.Contracts.Couriers;
 using Mottu.Rentals.Domain.Entities;
 using Mottu.Rentals.Domain.Enums;
+using Mottu.Rentals.Application.Common.Validation;
 
 namespace Mottu.Rentals.Application.Couriers;
 
