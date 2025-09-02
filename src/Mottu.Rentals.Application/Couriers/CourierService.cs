@@ -2,6 +2,7 @@ using Mottu.Rentals.Application.Abstractions;
 using Mottu.Rentals.Contracts.Couriers;
 using Mottu.Rentals.Domain.Entities;
 using Mottu.Rentals.Domain.Enums;
+using Mottu.Rentals.Application.Validation;
 
 namespace Mottu.Rentals.Application.Couriers;
 
@@ -18,7 +19,11 @@ public class CourierService : ICourierService
 
     public async Task<CourierResponse> CreateAsync(CourierCreateRequest request, CancellationToken ct)
     {
-        if (await _repo.ExistsCnpjAsync(request.Cnpj, ct))
+        var normalizedCnpj = CnpjValidator.Normalize(request.Cnpj);
+        if (!CnpjValidator.IsValid(normalizedCnpj))
+            throw new InvalidOperationException("Invalid CNPJ.");
+
+        if (await _repo.ExistsCnpjAsync(normalizedCnpj, ct))
             throw new InvalidOperationException("CNPJ already exists.");
         if (await _repo.ExistsCnhNumberAsync(request.CnhNumber, ct))
             throw new InvalidOperationException("CNH number already exists.");
@@ -36,7 +41,7 @@ public class CourierService : ICourierService
             Id = Guid.NewGuid(),
             Identifier = request.Identifier ?? string.Empty,
             Name = request.Name,
-            Cnpj = request.Cnpj,
+            Cnpj = normalizedCnpj,
             BirthDate = request.BirthDate.ToDateTime(TimeOnly.MinValue),
             CnhNumber = request.CnhNumber,
             CnhType = cnhType,
