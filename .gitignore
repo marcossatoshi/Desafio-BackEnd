@@ -1,6 +1,11 @@
 # Build outputs
-**/bin/
-**/obj/
+# Robust ignore for build artifacts (handles nested + case variants)
+[Bb]in/
+[Oo]bj/
+**/[Bb]in/**
+**/[Oo]bj/**
+*/[Bb]in/*
+*/[Oo]bj/*
 tests/**/bin/
 tests/**/obj/
 
