@@ -41,28 +41,17 @@ public sealed class ContainersFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _postgres.StartAsync();
         var isAct = string.Equals(Environment.GetEnvironmentVariable("ACT"), "true", StringComparison.OrdinalIgnoreCase);
         if (!isAct)
         {
+            await _postgres.StartAsync();
             await _rabbitMq!.StartAsync();
-        }
-
-        var cs = _postgres.GetConnectionString();
-        // Normalize Host to 127.0.0.1 to avoid IPv6 issues on CI runners
-        cs = cs.Replace("Host=localhost", "Host=127.0.0.1");
-        string? rmqHost = null;
-        int rmqPort = 0;
-        if (!isAct)
-        {
-            rmqHost = _rabbitMq!.Hostname;
-            rmqPort = _rabbitMq.GetMappedPublicPort(5672);
-        }
-
-        // Flow env vars into the app under test
-        Environment.SetEnvironmentVariable("MOTTU_POSTGRES_CONNECTION", cs);
-        if (!isAct)
-        {
+            var cs = _postgres.GetConnectionString();
+            cs = cs.Replace("Host=localhost", "Host=127.0.0.1");
+            var rmqHost = _rabbitMq!.Hostname;
+            var rmqPort = _rabbitMq.GetMappedPublicPort(5672);
+            Environment.SetEnvironmentVariable("MOTTU_POSTGRES_CONNECTION", cs);
+            Environment.SetEnvironmentVariable("UseInMemoryEF", null);
             Environment.SetEnvironmentVariable("RabbitMq__HostName", rmqHost);
             Environment.SetEnvironmentVariable("RabbitMq__Port", rmqPort.ToString());
             Environment.SetEnvironmentVariable("RabbitMq__UserName", "guest");
@@ -71,17 +60,19 @@ public sealed class ContainersFixture : IAsyncLifetime
         }
         else
         {
-            // Use in-memory bus under act to avoid broker connectivity issues
+            Environment.SetEnvironmentVariable("UseInMemoryEF", "true");
             Environment.SetEnvironmentVariable("UseMassTransitInMemory", "true");
         }
-        Environment.SetEnvironmentVariable("UseInMemoryEF", null);
 
         Factory = new WebApplicationFactory<Program>();
-        // Apply EF migrations once the factory is built
-        using (var scope = Factory.Services.CreateScope())
+        if (!isAct)
         {
-            var db = scope.ServiceProvider.GetRequiredService<RentalsDbContext>();
-            await db.Database.MigrateAsync();
+            // Apply EF migrations once the factory is built
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<RentalsDbContext>();
+                await db.Database.MigrateAsync();
+            }
         }
         Client = Factory.CreateClient();
     }
