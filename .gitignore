@@ -1,6 +1,8 @@
 # Build outputs
-**/bin/Release/
-**/obj/Release/
+**/bin/
+**/obj/
+tests/**/bin/
+tests/**/obj/
 
 # Also ignore debug outputs and user-specific files (common)
 **/bin/Debug/
