@@ -55,6 +55,10 @@ public class RentalService : IRentalService
             DailyPrice = daily,
             CreatedAtUtc = DateTime.UtcNow
         };
+        if (request.EndDate.HasValue)
+        {
+            entity.EndDate = DateOnly.FromDateTime(request.EndDate.Value.ToUniversalTime().Date);
+        }
         await _repo.AddAsync(entity, ct);
         await _repo.SaveChangesAsync(ct);
 

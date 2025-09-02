@@ -47,6 +47,22 @@ public static class CouriersEndpoints
         })
         .DisableAntiforgery();
 
+        group.MapDelete("{id:guid}", async ([FromServices] RentalsDbContext db, [FromRoute] Guid id, CancellationToken ct) =>
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+            var hasBlockingRental = await db.Rentals.AsNoTracking()
+                .AnyAsync(x => x.CourierId == id && (x.EndDate == null || today < x.EndDate), ct);
+            if (hasBlockingRental)
+                return Results.Conflict(new { message = "Courier has an active or not-yet-finished rental and cannot be deleted." });
+
+            var entity = await db.Couriers.FirstOrDefaultAsync(x => x.Id == id, ct);
+            if (entity is null) return Results.NotFound();
+
+            db.Couriers.Remove(entity);
+            await db.SaveChangesAsync(ct);
+            return Results.NoContent();
+        });
+
         return app;
     }
 }

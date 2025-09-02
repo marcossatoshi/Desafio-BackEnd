@@ -69,10 +69,20 @@ public static class MotorcyclesEndpoints
             }
         });
 
-        group.MapDelete("{id:guid}", async ([FromServices] IMotorcycleService service, [FromRoute] Guid id, CancellationToken ct) =>
+        group.MapDelete("{id:guid}", async ([FromServices] RentalsDbContext db, [FromRoute] Guid id, CancellationToken ct) =>
         {
-            var ok = await service.DeleteAsync(id, ct);
-            return ok ? Results.NoContent() : Results.Conflict(new { message = "Motorcycle has rentals or does not exist." });
+            var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+            var hasBlockingRental = await db.Rentals.AsNoTracking()
+                .AnyAsync(x => x.MotorcycleId == id && (x.EndDate == null || today < x.EndDate), ct);
+            if (hasBlockingRental)
+                return Results.Conflict(new { message = "Motorcycle has an active or not-yet-finished rental and cannot be deleted." });
+
+            var entity = await db.Motorcycles.FirstOrDefaultAsync(x => x.Id == id, ct);
+            if (entity is null) return Results.NotFound();
+
+            db.Motorcycles.Remove(entity);
+            await db.SaveChangesAsync(ct);
+            return Results.NoContent();
         });
 
         return app;
