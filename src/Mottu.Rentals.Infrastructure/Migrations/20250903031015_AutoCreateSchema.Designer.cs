@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottu.Rentals.Infrastructure.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mottu.Rentals.Infrastructure.Migrations
 {
     [DbContext(typeof(RentalsDbContext))]
-    partial class RentalsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250903031015_AutoCreateSchema")]
+    partial class AutoCreateSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,7 +84,8 @@ namespace Mottu.Rentals.Infrastructure.Migrations
                     b.HasIndex("Cnpj")
                         .IsUnique();
 
-                    b.HasIndex("Identifier");
+                    b.HasIndex("Identifier")
+                        .IsUnique();
 
                     b.ToTable("couriers", (string)null);
                 });

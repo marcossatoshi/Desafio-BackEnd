@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Mottu.Rentals.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSchema : Migration
+    public partial class AutoCreateSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,7 +67,6 @@ namespace Mottu.Rentals.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    identifier = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     motorcycle_id = table.Column<Guid>(type: "uuid", nullable: false),
                     courier_id = table.Column<Guid>(type: "uuid", nullable: false),
                     plan = table.Column<int>(type: "integer", nullable: false),
@@ -110,7 +109,8 @@ namespace Mottu.Rentals.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_couriers_identifier",
                 table: "couriers",
-                column: "identifier");
+                column: "identifier",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_motorcycles_identifier",
@@ -127,11 +127,6 @@ namespace Mottu.Rentals.Infrastructure.Migrations
                 name: "IX_rentals_courier_id",
                 table: "rentals",
                 column: "courier_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_rentals_identifier",
-                table: "rentals",
-                column: "identifier");
 
             migrationBuilder.CreateIndex(
                 name: "IX_rentals_motorcycle_id",
