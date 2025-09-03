@@ -23,6 +23,8 @@ public class CourierService : ICourierService
             throw new InvalidOperationException("CNPJ already exists.");
         if (await _repo.ExistsCnhNumberAsync(request.CnhNumber, ct))
             throw new InvalidOperationException("CNH number already exists.");
+        if (!string.IsNullOrWhiteSpace(request.Identifier) && await _repo.ExistsIdentifierAsync(request.Identifier, ct))
+            throw new InvalidOperationException("Identifier already exists.");
 
         var cnhType = request.CnhType?.ToUpperInvariant() switch
         {

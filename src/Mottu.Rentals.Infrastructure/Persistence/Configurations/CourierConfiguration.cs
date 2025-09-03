@@ -24,7 +24,7 @@ public class CourierConfiguration : IEntityTypeConfiguration<Courier>
 
         builder.HasIndex(x => x.Cnpj).IsUnique();
         builder.HasIndex(x => x.CnhNumber).IsUnique();
-        builder.HasIndex(x => x.Identifier);
+        builder.HasIndex(x => x.Identifier).IsUnique();
     }
 }
 

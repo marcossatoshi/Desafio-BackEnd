@@ -16,6 +16,9 @@ public class CourierRepository : ICourierRepository
     public Task<bool> ExistsCnhNumberAsync(string cnhNumber, CancellationToken ct)
         => _db.Couriers.AnyAsync(x => x.CnhNumber == cnhNumber, ct);
 
+    public Task<bool> ExistsIdentifierAsync(string identifier, CancellationToken ct)
+        => _db.Couriers.AnyAsync(x => x.Identifier == identifier, ct);
+
     public async Task AddAsync(Courier entity, CancellationToken ct)
         => await _db.Couriers.AddAsync(entity, ct);
 
