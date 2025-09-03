@@ -100,7 +100,7 @@ Motivação: isolar regras de preço (valor diário por plano e cálculo do tota
 - Resiliência: retry/DLQ
 
 #Armazenamento
-- Utilizar um serviço adequado
+- ~Utilizar um serviço adequado~
 
 #API
 - Versionamento
