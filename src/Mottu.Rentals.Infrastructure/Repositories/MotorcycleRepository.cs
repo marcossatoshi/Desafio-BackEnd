@@ -19,7 +19,11 @@ public class MotorcycleRepository : IMotorcycleRepository
     public async Task<List<Motorcycle>> ListAsync(string? plate, CancellationToken ct)
     {
         var query = _db.Motorcycles.AsNoTracking().AsQueryable();
-        if (!string.IsNullOrWhiteSpace(plate)) query = query.Where(x => x.Plate == plate);
+        if (!string.IsNullOrWhiteSpace(plate))
+        {
+            var term = $"%{plate.Trim().ToLower()}%";
+            query = query.Where(x => EF.Functions.Like(x.Plate.ToLower(), term));
+        }
         return await query.OrderBy(x => x.Plate).ToListAsync(ct);
     }
 

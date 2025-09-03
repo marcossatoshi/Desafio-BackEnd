@@ -41,7 +41,7 @@ public class CourierService : ICourierService
             BirthDate = request.BirthDate,
             CnhNumber = request.CnhNumber,
             CnhType = cnhType,
-            CreatedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now()
+            CreatedAtUtc = DateTime.UtcNow
         };
         await _repo.AddAsync(entity, ct);
         await _repo.SaveChangesAsync(ct);
@@ -58,7 +58,7 @@ public class CourierService : ICourierService
 
         var path = await _storage.SaveAsync($"{id}_cnh{GetExtension(contentType)}", content, ct);
         entity.CnhImagePath = path;
-        entity.UpdatedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now();
+        entity.UpdatedAtUtc = DateTime.UtcNow;
         await _repo.SaveChangesAsync(ct);
 
         return new CourierResponse(entity.Id, entity.Identifier, entity.Name, entity.Cnpj, DateOnly.FromDateTime(entity.BirthDate), entity.CnhNumber, entity.CnhType.ToString(), entity.CnhImagePath);

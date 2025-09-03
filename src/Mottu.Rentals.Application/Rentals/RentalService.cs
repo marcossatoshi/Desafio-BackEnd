@@ -60,6 +60,8 @@ public class RentalService : IRentalService
     {
         var entity = await _repo.GetByIdAsync(id, ct);
         if (entity == null) return null;
+        if (entity.EndDate.HasValue)
+            throw new InvalidOperationException("Rental already finalized.");
         var end = Mottu.Rentals.Application.Common.Time.BrazilTime.Today();
         entity.EndDate = end;
 

@@ -45,6 +45,19 @@ public class MotorcyclesEndpointsTests : IClassFixture<CustomWebAppFactory>
         var del = await _client.DeleteAsync($"/motorcycles/{created2!.Id}");
         del.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
+
+    [Fact]
+    public async Task List_Filter_By_Substring_ShouldReturnMatches()
+    {
+        var m1 = await _client.PostAsJsonAsync("/motorcycles", new MotorcycleCreateRequest("mc-func-3", 2022, "ModelX", "ABC1234"));
+        m1.EnsureSuccessStatusCode();
+        var m2 = await _client.PostAsJsonAsync("/motorcycles", new MotorcycleCreateRequest("mc-func-4", 2022, "ModelX", "DEF8123"));
+        m2.EnsureSuccessStatusCode();
+
+        var list = await _client.GetFromJsonAsync<List<MotorcycleResponse>>("/motorcycles?plate=123");
+        list.Should().NotBeNull();
+        list!.Any(x => x.Plate.Contains("123")).Should().BeTrue();
+    }
 }
 
 

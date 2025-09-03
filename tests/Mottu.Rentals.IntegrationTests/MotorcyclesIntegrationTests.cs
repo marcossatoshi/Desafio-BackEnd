@@ -32,6 +32,20 @@ public class MotorcyclesIntegrationTests : IClassFixture<ContainersFixture>
         fetched!.Identifier.Should().Be(create.Identifier);
         fetched!.Plate.Should().Be(create.Plate);
     }
+
+    [Fact]
+    public async Task List_Filter_By_Substring_Works()
+    {
+        var rnd = Guid.NewGuid().ToString("N").Substring(0,4).ToUpper();
+        var create1 = await _fx.Client.PostAsJsonAsync("/motorcycles", new Mottu.Rentals.Contracts.Motorcycles.MotorcycleCreateRequest($"mc-int-3-{rnd}", 2024, "ModelA", $"ZZ{rnd}34"));
+        create1.EnsureSuccessStatusCode();
+        var create2 = await _fx.Client.PostAsJsonAsync("/motorcycles", new Mottu.Rentals.Contracts.Motorcycles.MotorcycleCreateRequest($"mc-int-4-{rnd}", 2023, "ModelB", $"12{rnd}Z4"));
+        create2.EnsureSuccessStatusCode();
+
+        var list = await _fx.Client.GetFromJsonAsync<List<Mottu.Rentals.Contracts.Motorcycles.MotorcycleResponse>>("/motorcycles?plate=12");
+        Assert.NotNull(list);
+        Assert.True(list!.Any(m => m.Plate.Contains("12")));
+    }
 }
 
 

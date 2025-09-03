@@ -18,23 +18,35 @@ public sealed class DefaultRentalPricingStrategy : IRentalPricingStrategy
 
     public decimal CalculateTotalOnReturn(Rental rental, DateOnly endDate)
     {
+        var planDays = (int)rental.Plan;
+
         if (endDate < rental.ExpectedEndDate)
         {
-            var usedDays = (endDate.DayNumber - rental.StartDate.DayNumber);
+            // Early return
+            var finePerc = rental.Plan == PlanType.Days7 ? 0.20m : 0.40m;
+
+            if (endDate <= rental.StartDate)
+            {
+                // Returned before or on the start date: no daily usage, full plan fine
+                return planDays * rental.DailyPrice * finePerc;
+            }
+
+            var usedDays = Math.Max(0, endDate.DayNumber - rental.StartDate.DayNumber);
+            var remainingDays = Math.Max(0, rental.ExpectedEndDate.DayNumber - endDate.DayNumber);
             var totalDiarias = usedDays * rental.DailyPrice;
-            var remainingDays = (rental.ExpectedEndDate.DayNumber - endDate.DayNumber);
-            var finePerc = rental.Plan == PlanType.Days7 ? 0.20m : rental.Plan == PlanType.Days15 ? 0.40m : 0m;
             var fine = remainingDays * rental.DailyPrice * finePerc;
             return totalDiarias + fine;
         }
 
         if (endDate > rental.ExpectedEndDate)
         {
-            var extraDays = (endDate.DayNumber - rental.ExpectedEndDate.DayNumber);
-            return ((int)rental.Plan * rental.DailyPrice) + (extraDays * 50m);
+            // Late return
+            var extraDays = endDate.DayNumber - rental.ExpectedEndDate.DayNumber;
+            return (planDays * rental.DailyPrice) + (extraDays * 50m);
         }
 
-        return ((int)rental.Plan * rental.DailyPrice);
+        // On-time return
+        return planDays * rental.DailyPrice;
     }
 }
 
