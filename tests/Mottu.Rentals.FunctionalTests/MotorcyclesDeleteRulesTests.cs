@@ -24,12 +24,12 @@ public class MotorcyclesDeleteRulesTests : IClassFixture<CustomWebAppFactory>
 
         // Create courier
         var co = await _client.PostAsJsonAsync("/couriers", new Mottu.Rentals.Contracts.Couriers.CourierCreateRequest(
-            "co-del-1", "John Doe", "11222333000181", DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-25)), "CNH123", "A"));
+            "co-del-1", "John Doe", "11222333000181", DateTime.UtcNow.AddYears(-25), "CNH123", "A"));
         co.EnsureSuccessStatusCode();
         var courier = await co.Content.ReadFromJsonAsync<Mottu.Rentals.Contracts.Couriers.CourierResponse>();
 
         // Create rental with no end date (active)
-        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest("rent-del-1", moto!.Id, courier!.Id, 7));
+        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(moto!.Id, courier!.Id, 7));
         rent.EnsureSuccessStatusCode();
 
         // Try delete motorcycle: conflicts
@@ -47,15 +47,14 @@ public class MotorcyclesDeleteRulesTests : IClassFixture<CustomWebAppFactory>
 
         // Create courier
         var co = await _client.PostAsJsonAsync("/couriers", new Mottu.Rentals.Contracts.Couriers.CourierCreateRequest(
-            "co-del-2", "Jane Roe", "22333444000192", DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-30)), "CNH456", "A"));
+            "co-del-2", "Jane Roe", "22333444000192", DateTime.UtcNow.AddYears(-30), "CNH456", "A"));
         co.EnsureSuccessStatusCode();
         var courier = await co.Content.ReadFromJsonAsync<Mottu.Rentals.Contracts.Couriers.CourierResponse>();
 
         // Create rental that already ended yesterday
         var yesterday = DateTime.UtcNow.Date.AddDays(-1);
         var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(
-            "rent-del-2", moto!.Id, courier!.Id, 7,
-            yesterday.AddDays(-7), yesterday, yesterday));
+            moto!.Id, courier!.Id, 7));
         rent.EnsureSuccessStatusCode();
 
         // Delete motorcycle: should succeed

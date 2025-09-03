@@ -20,11 +20,11 @@ public class CouriersDeleteRulesTests : IClassFixture<CustomWebAppFactory>
         var moto = await mc.Content.ReadFromJsonAsync<MotorcycleResponse>();
 
         var co = await _client.PostAsJsonAsync("/couriers", new CourierCreateRequest(
-            "co-1", "John Active", "33444555000103", DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-22)), "CNH900", "A"));
+            "co-1", "John Active", "33444555000103", DateTime.UtcNow.AddYears(-22), "CNH900", "A"));
         co.EnsureSuccessStatusCode();
         var courier = await co.Content.ReadFromJsonAsync<CourierResponse>();
 
-        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest("rent-co-1", moto!.Id, courier!.Id, 7));
+        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(moto!.Id, courier!.Id, 7));
         rent.EnsureSuccessStatusCode();
 
         var del = await _client.DeleteAsync($"/couriers/{courier!.Id}");
@@ -39,14 +39,13 @@ public class CouriersDeleteRulesTests : IClassFixture<CustomWebAppFactory>
         var moto = await mc.Content.ReadFromJsonAsync<MotorcycleResponse>();
 
         var co = await _client.PostAsJsonAsync("/couriers", new CourierCreateRequest(
-            "co-2", "Jane Finished", "44555666000114", DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-28)), "CNH901", "A"));
+            "co-2", "Jane Finished", "44555666000114", DateTime.UtcNow.AddYears(-28), "CNH901", "A"));
         co.EnsureSuccessStatusCode();
         var courier = await co.Content.ReadFromJsonAsync<CourierResponse>();
 
         var yesterday = DateTime.UtcNow.Date.AddDays(-1);
         var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(
-            "rent-co-2", moto!.Id, courier!.Id, 7,
-            yesterday.AddDays(-7), yesterday, yesterday));
+            moto!.Id, courier!.Id, 7));
         rent.EnsureSuccessStatusCode();
 
         var del = await _client.DeleteAsync($"/couriers/{courier!.Id}");

@@ -113,26 +113,6 @@ public class RentalServiceTests
     }
 
     [Fact]
-    public async Task Create_With_EndDate_Persists_EndDate()
-    {
-        var courier = new Courier { Id = Guid.NewGuid(), CnhType = CnhType.A };
-        _courierRepo.GetByIdAsync(courier.Id, Arg.Any<CancellationToken>()).Returns(courier);
-        _rentalRepo.ExistsActiveRentalForMotorcycleAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
-        _rentalRepo.ExistsActiveRentalForCourierAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
-
-        var start = DateTime.UtcNow.Date.AddDays(-7);
-        var expectedEnd = DateTime.UtcNow.Date.AddDays(-1);
-        var end = expectedEnd;
-
-        var req = new RentalCreateRequest("rent-with-end", Guid.NewGuid(), courier.Id, (int)PlanType.Days7, start, expectedEnd, end);
-        var sut = CreateSut();
-        var created = await sut.CreateAsync(req, CancellationToken.None);
-
-        created.EndDate.Should().NotBeNull();
-        created.EndDate!.Value.Should().Be(DateOnly.FromDateTime(end));
-    }
-
-    [Fact]
     public async Task Create_Without_EndDate_Leaves_EndDate_Null()
     {
         var courier = new Courier { Id = Guid.NewGuid(), CnhType = CnhType.A };
@@ -140,7 +120,7 @@ public class RentalServiceTests
         _rentalRepo.ExistsActiveRentalForMotorcycleAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
         _rentalRepo.ExistsActiveRentalForCourierAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
 
-        var req = new RentalCreateRequest("rent-no-end", Guid.NewGuid(), courier.Id, (int)PlanType.Days7);
+        var req = new RentalCreateRequest(Guid.NewGuid(), courier.Id, (int)PlanType.Days7);
         var sut = CreateSut();
         var created = await sut.CreateAsync(req, CancellationToken.None);
 

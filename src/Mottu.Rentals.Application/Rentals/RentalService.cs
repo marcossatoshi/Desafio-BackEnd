@@ -50,10 +50,6 @@ public class RentalService : IRentalService
             DailyPrice = daily,
             CreatedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now()
         };
-        if (request.EndDate.HasValue)
-        {
-            entity.EndDate = DateOnly.FromDateTime(request.EndDate.Value.ToUniversalTime().Date);
-        }
         await _repo.AddAsync(entity, ct);
         await _repo.SaveChangesAsync(ct);
 
