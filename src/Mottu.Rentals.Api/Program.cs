@@ -59,6 +59,15 @@ app.UseSwaggerUI(c =>
     c.DefaultModelsExpandDepth(0);
 });
 
+// Static files to serve uploaded CNH images from local storage
+var storagePath = Path.Combine(AppContext.BaseDirectory, "storage");
+Directory.CreateDirectory(storagePath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(storagePath),
+    RequestPath = "/files"
+});
+
 app.MapMotorcyclesEndpoints();
 app.MapCouriersEndpoints();
 app.MapRentalsEndpoints();

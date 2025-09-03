@@ -17,7 +17,7 @@ public class LocalFileStorage : IFileStorage
         var path = Path.Combine(_root, safeName);
         using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
         await content.CopyToAsync(fs, ct);
-        return path;
+        return $"/files/{safeName}";
     }
 }
 
