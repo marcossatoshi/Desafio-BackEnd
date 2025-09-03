@@ -5,6 +5,16 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
+var isHeroku = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DYNO"));
+if (isHeroku)
+{
+    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+    {
+        ["UseInMemoryEF"] = "true",
+        ["UseMassTransitInMemory"] = "true"
+    });
+}
+
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
