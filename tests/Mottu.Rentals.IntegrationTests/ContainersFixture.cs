@@ -50,24 +50,37 @@ public sealed class ContainersFixture : IAsyncLifetime
             cs = cs.Replace("Host=localhost", "Host=127.0.0.1");
             var rmqHost = _rabbitMq!.Hostname;
             var rmqPort = _rabbitMq.GetMappedPublicPort(5672);
-            Environment.SetEnvironmentVariable("MOTTU_POSTGRES_CONNECTION", cs);
             Environment.SetEnvironmentVariable("UseInMemoryEF", null);
             Environment.SetEnvironmentVariable("RabbitMq__HostName", rmqHost);
             Environment.SetEnvironmentVariable("RabbitMq__Port", rmqPort.ToString());
             Environment.SetEnvironmentVariable("RabbitMq__UserName", "guest");
             Environment.SetEnvironmentVariable("RabbitMq__Password", "guest");
             Environment.SetEnvironmentVariable("UseMassTransitInMemory", null);
+
+            // Build factory bound to this fixture's Postgres connection
+            Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+            {
+                b.ConfigureServices(services =>
+                {
+                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<RentalsDbContext>));
+                    if (descriptor != null)
+                    {
+                        services.Remove(descriptor);
+                    }
+                    services.AddDbContext<RentalsDbContext>(options => options.UseNpgsql(cs));
+                });
+            });
         }
         else
         {
             Environment.SetEnvironmentVariable("UseInMemoryEF", "true");
             Environment.SetEnvironmentVariable("UseMassTransitInMemory", "true");
+            Factory = new WebApplicationFactory<Program>();
         }
 
-        Factory = new WebApplicationFactory<Program>();
         if (!isAct)
         {
-            // Apply EF migrations once the factory is built
+            // Apply EF migrations once the factory is built, resetting database to avoid schema drift
             using (var scope = Factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<RentalsDbContext>();
