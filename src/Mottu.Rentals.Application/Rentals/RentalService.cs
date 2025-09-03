@@ -35,25 +35,20 @@ public class RentalService : IRentalService
         if (await _repo.ExistsActiveRentalForCourierAsync(request.CourierId, ct))
             throw new InvalidOperationException("Courier already has active rental.");
 
-        var start = request.StartDate.HasValue
-            ? DateOnly.FromDateTime(request.StartDate.Value.ToUniversalTime().Date)
-            : DateOnly.FromDateTime(DateTime.UtcNow.Date).AddDays(1);
-        var expected = request.ExpectedEndDate.HasValue
-            ? DateOnly.FromDateTime(request.ExpectedEndDate.Value.ToUniversalTime().Date)
-            : start.AddDays((int)plan);
+        var start = Mottu.Rentals.Application.Common.Time.BrazilTime.Today().AddDays(1);
+        var expected = start.AddDays((int)plan);
         var daily = _pricing.DetermineDailyPrice(plan);
 
         var entity = new Rental
         {
             Id = Guid.NewGuid(),
-            Identifier = request.Identifier ?? string.Empty,
             MotorcycleId = request.MotorcycleId,
             CourierId = request.CourierId,
             Plan = plan,
             StartDate = start,
             ExpectedEndDate = expected,
             DailyPrice = daily,
-            CreatedAtUtc = DateTime.UtcNow
+            CreatedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now()
         };
         await _repo.AddAsync(entity, ct);
         await _repo.SaveChangesAsync(ct);
@@ -61,12 +56,11 @@ public class RentalService : IRentalService
         return ToResponse(entity);
     }
 
-    public async Task<RentalResponse?> ReturnAsync(Guid id, RentalReturnRequest request, CancellationToken ct)
+    public async Task<RentalResponse?> ReturnAsync(Guid id, CancellationToken ct)
     {
         var entity = await _repo.GetByIdAsync(id, ct);
         if (entity == null) return null;
-
-        var end = request.EndDate;
+        var end = Mottu.Rentals.Application.Common.Time.BrazilTime.Today();
         entity.EndDate = end;
 
         var total = _pricing.CalculateTotalOnReturn(entity, end);
@@ -77,7 +71,7 @@ public class RentalService : IRentalService
     }
 
     private static RentalResponse ToResponse(Rental e) => new(
-        e.Id, e.Identifier, e.MotorcycleId, e.CourierId, (int)e.Plan, e.StartDate, e.ExpectedEndDate, e.EndDate, e.DailyPrice, e.TotalPrice
+        e.Id, e.MotorcycleId, e.CourierId, (int)e.Plan, e.StartDate, e.ExpectedEndDate, e.EndDate, e.DailyPrice, e.TotalPrice
     );
 }
 

@@ -5,7 +5,6 @@ namespace Mottu.Rentals.Domain.Entities;
 public class Rental
 {
     public Guid Id { get; set; }
-    public string Identifier { get; set; } = string.Empty;
     public Guid MotorcycleId { get; set; }
     public Guid CourierId { get; set; }
     public PlanType Plan { get; set; }

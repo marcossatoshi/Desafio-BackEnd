@@ -31,7 +31,7 @@ public class MotorcycleService : IMotorcycleService
             Year = request.Year,
             Model = request.Model,
             Plate = request.Plate,
-            CreatedAtUtc = DateTime.UtcNow
+            CreatedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now()
         };
         await _repo.AddAsync(entity, ct);
         await _repo.SaveChangesAsync(ct);
@@ -62,7 +62,7 @@ public class MotorcycleService : IMotorcycleService
         }
 
         entity.Plate = request.Plate;
-        entity.UpdatedAtUtc = DateTime.UtcNow;
+        entity.UpdatedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now();
         await _repo.SaveChangesAsync(ct);
         return new MotorcycleResponse(entity.Id, entity.Identifier, entity.Year, entity.Model, entity.Plate, entity.CreatedAtUtc);
     }

@@ -24,7 +24,7 @@ public class RentalServiceTests
         _rentalRepo.ExistsActiveRentalForMotorcycleAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
         _rentalRepo.ExistsActiveRentalForCourierAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
 
-        var create = new RentalCreateRequest("rent-ontime", Guid.NewGuid(), courier.Id, (int)PlanType.Days7);
+        var create = new RentalCreateRequest(Guid.NewGuid(), courier.Id, (int)PlanType.Days7);
         var sut = CreateSut();
         var created = await sut.CreateAsync(create, CancellationToken.None);
 
@@ -40,7 +40,7 @@ public class RentalServiceTests
         };
         _rentalRepo.GetByIdAsync(entity.Id, Arg.Any<CancellationToken>()).Returns(entity);
 
-        var ret = await sut.ReturnAsync(entity.Id, new RentalReturnRequest(created.ExpectedEndDate), CancellationToken.None);
+        var ret = await sut.ReturnAsync(entity.Id, CancellationToken.None);
         ret!.TotalPrice.Should().Be(7 * 30m);
     }
 
@@ -52,7 +52,7 @@ public class RentalServiceTests
         _rentalRepo.ExistsActiveRentalForMotorcycleAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
         _rentalRepo.ExistsActiveRentalForCourierAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
 
-        var create = new RentalCreateRequest("rent-early", Guid.NewGuid(), courier.Id, (int)PlanType.Days7);
+        var create = new RentalCreateRequest(Guid.NewGuid(), courier.Id, (int)PlanType.Days7);
         var sut = CreateSut();
         var created = await sut.CreateAsync(create, CancellationToken.None);
 
@@ -69,7 +69,7 @@ public class RentalServiceTests
         _rentalRepo.GetByIdAsync(entity.Id, Arg.Any<CancellationToken>()).Returns(entity);
 
         var endEarly = created.ExpectedEndDate.AddDays(-2);
-        var ret = await sut.ReturnAsync(entity.Id, new RentalReturnRequest(endEarly), CancellationToken.None);
+        var ret = await sut.ReturnAsync(entity.Id, CancellationToken.None);
 
         var usedDays = endEarly.DayNumber - created.StartDate.DayNumber;
         var remainingDays = created.ExpectedEndDate.DayNumber - endEarly.DayNumber;
@@ -85,7 +85,7 @@ public class RentalServiceTests
         _rentalRepo.ExistsActiveRentalForMotorcycleAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
         _rentalRepo.ExistsActiveRentalForCourierAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(false);
 
-        var create = new RentalCreateRequest("rent-late", Guid.NewGuid(), courier.Id, (int)PlanType.Days15);
+        var create = new RentalCreateRequest(Guid.NewGuid(), courier.Id, (int)PlanType.Days15);
         var sut = CreateSut();
         var created = await sut.CreateAsync(create, CancellationToken.None);
 
@@ -102,7 +102,7 @@ public class RentalServiceTests
         _rentalRepo.GetByIdAsync(entity.Id, Arg.Any<CancellationToken>()).Returns(entity);
 
         var endLate = created.ExpectedEndDate.AddDays(3);
-        var ret = await sut.ReturnAsync(entity.Id, new RentalReturnRequest(endLate), CancellationToken.None);
+        var ret = await sut.ReturnAsync(entity.Id, CancellationToken.None);
 
         var expected = (15 * 28m) + (3 * 50m);
         ret!.TotalPrice.Should().Be(expected);

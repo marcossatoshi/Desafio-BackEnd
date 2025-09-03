@@ -3,13 +3,9 @@ using System.Text.Json.Serialization;
 namespace Mottu.Rentals.Contracts.Rentals;
 
 public record RentalCreateRequest(
-    [property: JsonPropertyName("identifier")] string Identifier,
     [property: JsonPropertyName("motorcycleId")] Guid MotorcycleId,
     [property: JsonPropertyName("courierId")] Guid CourierId,
-    [property: JsonPropertyName("plan")] int Plan,
-    [property: JsonPropertyName("startDate")] DateTime? StartDate = null,
-    [property: JsonPropertyName("expectedEndDate")] DateTime? ExpectedEndDate = null,
-    [property: JsonPropertyName("endDate")] DateTime? EndDate = null
+    [property: JsonPropertyName("plan")] int Plan
 );
 
 public record RentalReturnRequest(
@@ -18,7 +14,6 @@ public record RentalReturnRequest(
 
 public record RentalResponse(
     [property: JsonPropertyName("id")] Guid Id,
-    [property: JsonPropertyName("identifier")] string Identifier,
     [property: JsonPropertyName("motorcycleId")] Guid MotorcycleId,
     [property: JsonPropertyName("courierId")] Guid CourierId,
     [property: JsonPropertyName("plan")] int Plan,

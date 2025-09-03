@@ -20,7 +20,7 @@ public sealed class LoggingRentalServiceDecorator : IRentalService
         try
         {
             var res = await _inner.CreateAsync(request, ct);
-            _logger.LogInformation("Created rental {Id} ({Identifier})", res.Id, res.Identifier);
+            _logger.LogInformation("Created rental {Id}", res.Id);
             return res;
         }
         catch (Exception ex)
@@ -30,12 +30,12 @@ public sealed class LoggingRentalServiceDecorator : IRentalService
         }
     }
 
-    public async Task<RentalResponse?> ReturnAsync(Guid id, RentalReturnRequest request, CancellationToken ct)
+    public async Task<RentalResponse?> ReturnAsync(Guid id, CancellationToken ct)
     {
-        _logger.LogInformation("Returning rental {Id} on {Date}", id, request.EndDate);
+        _logger.LogInformation("Returning rental {Id}", id);
         try
         {
-            var res = await _inner.ReturnAsync(id, request, ct);
+            var res = await _inner.ReturnAsync(id, ct);
             if (res is null)
             {
                 _logger.LogWarning("Rental {Id} not found on return", id);

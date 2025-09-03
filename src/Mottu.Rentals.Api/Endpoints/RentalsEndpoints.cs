@@ -27,9 +27,9 @@ public static class RentalsEndpoints
             }
         });
 
-        group.MapPost("{id:guid}/return", async ([FromServices] IRentalService service, [FromRoute] Guid id, [FromBody] RentalReturnRequest request, CancellationToken ct) =>
+        group.MapPost("{id:guid}/return", async ([FromServices] IRentalService service, [FromRoute] Guid id, CancellationToken ct) =>
         {
-            var updated = await service.ReturnAsync(id, request, ct);
+            var updated = await service.ReturnAsync(id, ct);
             return updated is null ? Results.NotFound() : Results.Ok(updated);
         });
 
@@ -37,7 +37,7 @@ public static class RentalsEndpoints
         {
             var r = await db.Rentals.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
             if (r is null) return Results.NotFound();
-            var dto = new RentalResponse(r.Id, r.Identifier, r.MotorcycleId, r.CourierId, (int)r.Plan, r.StartDate, r.ExpectedEndDate, r.EndDate, r.DailyPrice, r.TotalPrice);
+            var dto = new RentalResponse(r.Id, r.MotorcycleId, r.CourierId, (int)r.Plan, r.StartDate, r.ExpectedEndDate, r.EndDate, r.DailyPrice, r.TotalPrice);
             return Results.Ok(dto);
         });
 

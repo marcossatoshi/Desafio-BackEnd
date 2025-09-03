@@ -26,7 +26,7 @@ public class MotorcycleCreatedConsumer : IConsumer<MotorcycleCreatedEvent>
                     Id = Guid.NewGuid(),
                     MotorcycleId = msg.Id,
                     Year = msg.Year,
-                    PublishedAtUtc = DateTime.UtcNow
+                    PublishedAtUtc = Mottu.Rentals.Application.Common.Time.BrazilTime.Now()
                 });
                 await _db.SaveChangesAsync(context.CancellationToken);
             }
