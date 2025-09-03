@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Mottu.Rentals.Application.Abstractions;
 using Mottu.Rentals.Infrastructure.Messaging;
 using Mottu.Rentals.Infrastructure.Repositories;
+using CloudinaryDotNet;
 
 namespace Mottu.Rentals.Infrastructure;
 
@@ -45,7 +46,22 @@ public static class DependencyInjection
 		services.AddScoped<ICourierRepository, CourierRepository>();
 		services.AddScoped<IRentalRepository, RentalRepository>();
 		services.AddScoped<Mottu.Rentals.Application.Abstractions.IRentalPricingStrategy, Mottu.Rentals.Application.Rentals.DefaultRentalPricingStrategy>();
-		services.AddSingleton<Mottu.Rentals.Application.Abstractions.IFileStorage, Mottu.Rentals.Infrastructure.Storage.LocalFileStorage>();
+		// File storage: Cloudinary if configured, otherwise local disk
+		var cloudName = configuration["Cloudinary:CloudName"];
+		var apiKey = configuration["Cloudinary:ApiKey"];
+		var apiSecret = configuration["Cloudinary:ApiSecret"];
+		if (!string.IsNullOrWhiteSpace(cloudName) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(apiSecret))
+		{
+			var account = new Account(cloudName, apiKey, apiSecret);
+			var cloudinary = new Cloudinary(account);
+			services.AddSingleton(cloudinary);
+			services.AddSingleton<Mottu.Rentals.Application.Abstractions.IFileStorage>(sp =>
+				new Mottu.Rentals.Infrastructure.Storage.CloudinaryFileStorage(sp.GetRequiredService<Cloudinary>()));
+		}
+		else
+		{
+			services.AddSingleton<Mottu.Rentals.Application.Abstractions.IFileStorage, Mottu.Rentals.Infrastructure.Storage.LocalFileStorage>();
+		}
 
 		// Decorators
 		services.AddMemoryCache();
