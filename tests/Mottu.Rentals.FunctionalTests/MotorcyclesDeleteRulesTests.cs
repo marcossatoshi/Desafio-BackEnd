@@ -51,11 +51,12 @@ public class MotorcyclesDeleteRulesTests : IClassFixture<CustomWebAppFactory>
         co.EnsureSuccessStatusCode();
         var courier = await co.Content.ReadFromJsonAsync<Mottu.Rentals.Contracts.Couriers.CourierResponse>();
 
-        // Create rental that already ended yesterday
-        var yesterday = DateTime.UtcNow.Date.AddDays(-1);
-        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(
-            moto!.Id, courier!.Id, 7));
+        // Create rental then finalize (return) it so deletion is allowed
+        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(moto!.Id, courier!.Id, 7));
         rent.EnsureSuccessStatusCode();
+        var createdRent = await rent.Content.ReadFromJsonAsync<Mottu.Rentals.Contracts.Rentals.RentalResponse>();
+        var retResp = await _client.PostAsync($"/rentals/{createdRent!.Id}/return", null);
+        retResp.EnsureSuccessStatusCode();
 
         // Delete motorcycle: should succeed
         var del = await _client.DeleteAsync($"/motorcycles/{moto!.Id}");

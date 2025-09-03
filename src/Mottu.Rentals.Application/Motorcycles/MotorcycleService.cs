@@ -37,7 +37,14 @@ public class MotorcycleService : IMotorcycleService
         await _repo.SaveChangesAsync(ct);
 
         var evt = new Mottu.Rentals.Contracts.Events.MotorcycleCreatedEvent(entity.Id, entity.Year, entity.Model, entity.Plate, entity.CreatedAtUtc);
-        await _publisher.PublishAsync(evt, "motorcycle.created", ct);
+        try
+        {
+            await _publisher.PublishAsync(evt, "motorcycle.created", ct);
+        }
+        catch (Exception)
+        {
+            // Messaging is best-effort; do not fail the API operation if broker is unavailable
+        }
 
         return new MotorcycleResponse(entity.Id, entity.Identifier, entity.Year, entity.Model, entity.Plate, entity.CreatedAtUtc);
     }

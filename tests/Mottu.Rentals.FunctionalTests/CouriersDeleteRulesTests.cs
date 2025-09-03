@@ -43,10 +43,11 @@ public class CouriersDeleteRulesTests : IClassFixture<CustomWebAppFactory>
         co.EnsureSuccessStatusCode();
         var courier = await co.Content.ReadFromJsonAsync<CourierResponse>();
 
-        var yesterday = DateTime.UtcNow.Date.AddDays(-1);
-        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(
-            moto!.Id, courier!.Id, 7));
+        var rent = await _client.PostAsJsonAsync("/rentals", new RentalCreateRequest(moto!.Id, courier!.Id, 7));
         rent.EnsureSuccessStatusCode();
+        var createdRent = await rent.Content.ReadFromJsonAsync<Mottu.Rentals.Contracts.Rentals.RentalResponse>();
+        var retResp = await _client.PostAsync($"/rentals/{createdRent!.Id}/return", null);
+        retResp.EnsureSuccessStatusCode();
 
         var del = await _client.DeleteAsync($"/couriers/{courier!.Id}");
         del.StatusCode.Should().Be(HttpStatusCode.NoContent);
